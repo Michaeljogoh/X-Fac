@@ -1,23 +1,43 @@
 import { createBrowserRouter, RouterProvider, Route, Outlet} from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
-import Footer from './components/Footer/Footer';
 import Home from './Pages/Home/Home';
 import Post from './Pages/Post/Post'; 
 import Register from './Pages/Register/Register';
 import Login from './Pages/Login/Login';
-import Dashboard from './Pages/Dashboard/Dashboard';
+import Dashboard from './components/Admin/Dashboard/Dashboard';
+import HeadNav from './components/Admin/HeadNav/HeadNav';
+import SideNav from './components/Admin/SideNav/SideNav';
+import Talents from './Pages/Talents/Talents';
+import SingleTalent from './Pages/SingleTalent/SingleTalent';
+
 
 
 
 const Layout = () =>{
   return(
     <>
-    <Navbar/>
+    < Navbar />
     <Outlet/>
-    <Footer/>
+    
     </>
   )
 }
+
+const Layout2 = () =>{
+  return(
+    <>
+    < HeadNav />
+    {/* <Dashboard/> */}
+    <Outlet />
+    <SideNav />
+    </>
+  )
+}
+
+
+
+
+
 
 const router = createBrowserRouter([
   {
@@ -43,10 +63,24 @@ const router = createBrowserRouter([
     path:'/login',
     element:<Login/>
   },
-  {
-    path:'/dashboard',
-    element:<Dashboard />
-   },
+   {
+   path:'/',
+   element: < Layout2 />,
+   children:[
+    {
+      path:'/dashboard',
+      element:<Dashboard />
+    },
+    {
+      path:'/talents',
+      element:< Talents />
+    },
+    {
+      path:'/talents/:id',
+      element:< SingleTalent />
+    },
+   ]
+    },
 ])
 
 function App() {

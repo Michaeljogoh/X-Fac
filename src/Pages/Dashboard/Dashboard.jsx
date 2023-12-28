@@ -7,7 +7,8 @@ import Table from "../Table/Table"
 const Dashboard = () =>{
     return (
         <>
-   <Table/>
+ <Dashboard />
+  
         </>
     )
 }

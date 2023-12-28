@@ -47,12 +47,10 @@ const LogOut = () =>{
         <Link class="nav-link active" to={'/post'}>Form</Link>
         </li>
         
-        {currentUser ? (
        <li class="nav-item">
        <Link class="nav-link active" to={'/dashboard'}>Dashboard</Link>
        </li>
     
-        ) : (
           <div className="d-flex">
         <li class="nav-item">
           <Link class="nav-link active" to={'/register'}>Register</Link>
@@ -61,7 +59,7 @@ const LogOut = () =>{
           <Link class="nav-link active" to={'/login'}>Login</Link>
           </li>
           </div>
-        )}
+   
        
       </ul>
       <form class="d-flex">
