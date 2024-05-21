@@ -2,3 +2,9 @@
 .Vorm {
     text-align: center;
 }
+
+.hide-scroll{
+ overflow-y: hidden;
+
+}
+

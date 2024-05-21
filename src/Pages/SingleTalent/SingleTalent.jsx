@@ -3,32 +3,41 @@ import { useEffect , useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate , useParams } from 'react-router-dom';
 import { baseURL } from '../../API/API';
+import {toast} from "react-toastify"
+
 
 
 
 
 
 const SingleTalent = () =>{
+  const { id } = useParams();
+
  const [firstname , setFirstname] = useState('')
  const [lastname, setLastname] = useState('')
  const [summarize , setSummarize] = useState('')
  const [file, setFile] = useState('')
- const location = useLocation();
- const path = location.pathname.split("/")[2];
+ 
 
  useEffect(() =>{
- const getTalentById = async () =>{
-  const res = await axios.get(`${baseURL}/api/v1/talent/${path}`);
-  setFirstname(res.data.getTalentById.firstname);
-  setLastname(res.data.getTalentById.lastname);
-  setSummarize(res.data.getTalentById.summarize);
-  setFile(res.data.getTalentById.file)
- };
+  try {
+    const getTalentById = async () =>{
+     const res = await axios.get(`${baseURL}/api/v1/talent/${id}`);
+     setFirstname(res.data.getTalentById.firstname);
+     setLastname(res.data.getTalentById.lastname);
+     setSummarize(res.data.getTalentById.summarize);
+     setFile(res.data.getTalentById.file)
+    };
+   
+    getTalentById();
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+ }, [])
 
- getTalentById();
- }, [path])
 
- const { id } = useParams();
  const navigate = useNavigate();
 
  const handleApproved = async () =>{
@@ -36,7 +45,7 @@ const SingleTalent = () =>{
     status:"approved"
   }
  const res = await axios.patch(`${baseURL}/api/v1/talent/${id}`, newdata);
- console.log(res.data)
+ toast.success("Talent Accepted", {toastId: "msnjdndj"})
  }
 
  const handleRejected = async () =>{
@@ -44,7 +53,7 @@ const SingleTalent = () =>{
     status:"rejected"
   }
  const res = await axios.patch(`${baseURL}/api/v1/talent/${id}`, newdata);
- console.log(res.data)
+ toast.error("Talent Rejacted", {toastId: id})
  }
 
 
@@ -52,8 +61,6 @@ const SingleTalent = () =>{
     <>
 
   <main class="col-md-9 ms-sm-auto  col-lg-10 px-md-4" style={{marginTop:"80px"}}>
-    
-    {/* Video */}
   <div className="container">
     <div className="row">
       <div className="col-md-12">

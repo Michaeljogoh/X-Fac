@@ -2,15 +2,15 @@ import { useState , useEffect } from "react";
 import { baseURL } from "../../API/API";
 import axios from 'axios';
 import Loading from "../../components/Loading/Loading";
-import { useLocation , Link } from "react-router-dom";
-import authHeader from "../../Auth/authHeader";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "./talents.css"
+
 
 
 const Talents = () =>{
     const [talents , setTalent] = useState([]);
+    const [sortTalents, setSortTalents] = useState("all")
     const [isLoaded , setIsloaded] = useState(false);
-    const {search } = useLocation();
     const [currentPage , setCurrentPage] = useState(1);
     const recordsPerPage = 8;
     const lastIndex = currentPage * recordsPerPage;
@@ -18,84 +18,38 @@ const Talents = () =>{
     const records = talents.slice(firstIndex , lastIndex);
     const npage = Math.ceil(talents.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1)
+  
 
-    let navigate = useNavigate()
-
-    const logOut = ()  =>{
-      localStorage.removeItem("user");
-      navigate('/login')
-    }  
-
-    useEffect(() =>{
+  useEffect(() =>{
      const fetchData =  async () =>{
       try {
         setIsloaded(true)
-        const res = await axios.get(`${baseURL}/api/v1/talent/` + search);
+        const res = await axios.get(`${baseURL}/api/v1/talent/`);
         setTalent(res.data.getAllTalents);
         
-        console.log(res);
-       
       } catch (error) {
-          console.log("Private page", error.response);
-          }  
+        console.log( error);
+       }  
      }
      fetchData();
-    }, [search])
-
-const sortApproved =  async () =>{
-
-await axios.get(`${baseURL}/api/v1/talent/`);
-
-  const approvedList = talents.filter((t) =>{
-    return t.status === "approved"
-  });
-  setTalent(approvedList);
-
-}
-const sortPending =  async () =>{
-
-await axios.get(`${baseURL}/api/v1/talent/`);
-
-  const approvedList = talents.filter((t) =>{
-    return t.status === "pending"
-  });
-  setTalent(approvedList);
-
-}
-const sortRejected =  async () =>{
-
-await axios.get(`${baseURL}/api/v1/talent/`);
-
-  const approvedList = talents.filter((t) =>{
-    return t.status === "rejected"
-  });
-  setTalent(approvedList);
-
-}
+  }, []);
 
 
     return (
         <>
-  {/* <!-- Table --> */}
- <main class="col-md-9 ms-sm-auto mt-5 col-lg-10 px-md-4">
+      <main class="col-md-9 ms-sm-auto mt-5 col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Talents</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-secondary">Export</button>
-          </div>
-          {/* sort */}
-          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
-            <ul class="dropdown-menu bg-light" style={{cursor:"pointer"}}>
-              <li><a class="dropdown-item">All talents</a></li>
-              <li><a class="dropdown-item" onClick={() => sortPending()}>Pending</a></li>
-              <li><a class="dropdown-item" onClick={sortApproved}>Approved</a></li>
-              <li><a class="dropdown-item" onClick={sortRejected} >Rejected</a></li>
-            </ul>
-        </div>
+      <h1 class="h2">Talents</h1>
+      <div class="btn-toolbar mb-2 mb-md-0" >
+      <select class={sortTalents === "all" ? "form-select accor border border-2 border-secondary" : "" || sortTalents === "approved" ? "form-select accor border border-2 border-success" : "" || sortTalents === "pending" ? "form-select border accor border-2 border-warning" : "" || sortTalents === "rejected" ? "form-select accor border border-2 border-danger" : ""} aria-label="Default select example"value={sortTalents} onChange={e=> setSortTalents(e.currentTarget.value)} >
+      <option value="all" selected>All</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+      </select>
       </div>
-{/*  */}
+      </div>
+{/*============================================== table =======================================  */}
       <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -108,23 +62,42 @@ await axios.get(`${baseURL}/api/v1/talent/`);
             </tr>
           </thead>
           <tbody>
-            {isLoaded ? (
-             records.map((talent , i) =>{
+          {sortTalents === "all" ? 
+            <> 
+            {  records.map((talent , i) =>{
               return (
               <tr key={i} >
-              <td className="pt-2">{}</td>
+              <td className="pt-2">{talent._id.slice(5,15)}</td>
               <td className="pt-2">{talent.firstname}</td>
               <td className="pt-2">{talent.lastname}</td>
-              <td className="text-dark fs-4" style={{cursor:"pointer"}}><Link to={`/talents/${talent._id}`}><i class="bi bi-play-circle-fill text-dark"></i></Link></td>
+              <td className="text-dark fs-4" style={{cursor:"pointer"}}><Link to={`/dashboard/talents/${talent._id}`}><i class="bi bi-play-circle-fill text-dark"></i></Link></td>
               <td>
               <span className={talent.status === "approved" ? "text-white btn btn-success btn-sm" : ""  || talent.status ==='rejected' ? " text-white btn btn-danger btn-sm" :"" || talent.status ==='pending' ? " text-white btn btn-warning btn-sm" :""}>{talent.status}</span>
               </td>
             </tr>
              )
-             })
-            ): (
-              <div></div>
-            )}
+             })}
+            
+            </> 
+            : 
+            <>
+            {records.filter((c) => c.status === sortTalents).map((talent , i) =>{
+              return (
+              <tr key={i} >
+              <td className="pt-2">{talent._id.slice(5,15)}</td>
+              <td className="pt-2">{talent.firstname}</td>
+              <td className="pt-2">{talent.lastname}</td>
+              <td className="text-dark fs-4" style={{cursor:"pointer"}}><Link to={`/dashboard/talents/${talent._id}`}><i class="bi bi-play-circle-fill text-dark"></i></Link></td>
+              <td>
+              <span className={talent.status === "approved" ? "text-white btn btn-success btn-sm" : ""  || talent.status ==='rejected' ? " text-white btn btn-danger btn-sm" :"" || talent.status ==='pending' ? " text-white btn btn-warning btn-sm" :""}>{talent.status}</span>
+              </td>
+            </tr>
+             )
+             })}
+            </>
+            
+          }
+
           </tbody>
         </table>
          <nav>
@@ -148,10 +121,7 @@ await axios.get(`${baseURL}/api/v1/talent/`);
 
       </div>
 </main> 
-    
-          
-       
-        </>
+</>
     )
     function prePage() {
       if(currentPage !== 1){

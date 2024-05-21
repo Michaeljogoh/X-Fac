@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getCurrentUser} from "../../Auth/AuthService";
 import { useNavigate } from "react-router-dom";
-
-
-
 
 
 const Navbar = () => {
@@ -13,19 +9,18 @@ const [currentUser , setCurrentUser] = useState(undefined);
 let navigate = useNavigate();
 
 useEffect(()=>{
-  const user = getCurrentUser();
-   if (user){
-    setCurrentUser(user)
+const token = localStorage.getItem('token')
+   if (token){
+    setCurrentUser(token)
    }
 }, [])
 
-const LogOut = () =>{
-  localStorage.removeItem("user");
+const logOut = () =>{
+  localStorage.removeItem("token");
   navigate('/')
 }
 
-
-    return (
+return (
       <>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
@@ -40,18 +35,21 @@ const LogOut = () =>{
         </li>
         {currentUser && (
         <li class="nav-item">
-          <a class="nav-link active" onClick={LogOut } style={{cursor:"pointer"}}  aria-current="page">LogOut</a>
+          <a class="nav-link active" onClick={logOut } style={{cursor:"pointer"}}  aria-current="page">LogOut</a>
         </li>
         )}
         <li class="nav-item">
         <Link class="nav-link active" to={'/post'}>Form</Link>
         </li>
-        
+        {currentUser ? 
        <li class="nav-item">
        <Link class="nav-link active" to={'/dashboard'}>Dashboard</Link>
        </li>
+        :
+        <></>
+        }
     
-          <div className="d-flex">
+        <div className="d-flex">
         <li class="nav-item">
           <Link class="nav-link active" to={'/register'}>Register</Link>
           </li>

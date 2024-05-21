@@ -9,7 +9,9 @@ import HeadNav from './components/Admin/HeadNav/HeadNav';
 import SideNav from './components/Admin/SideNav/SideNav';
 import Talents from './Pages/Talents/Talents';
 import SingleTalent from './Pages/SingleTalent/SingleTalent';
-
+import PrivateRoute from './Auth/authPrivateRoute';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 
 
@@ -27,16 +29,11 @@ const Layout2 = () =>{
   return(
     <>
     < HeadNav />
-    {/* <Dashboard/> */}
     <Outlet />
     <SideNav />
     </>
   )
 }
-
-
-
-
 
 
 const router = createBrowserRouter([
@@ -63,30 +60,36 @@ const router = createBrowserRouter([
     path:'/login',
     element:<Login/>
   },
-   {
+  // dasboard layout
+  {
    path:'/',
    element: < Layout2 />,
    children:[
     {
       path:'/dashboard',
-      element:<Dashboard />
+      element: (<PrivateRoute><Talents /></PrivateRoute>)
     },
     {
-      path:'/talents',
-      element:< Talents />
+      path:'/dashboard/talents',
+      element: (<PrivateRoute>< Talents /></PrivateRoute>)
     },
     {
-      path:'/talents/:id',
-      element:< SingleTalent />
+      path:'/dashboard/talents/:id',
+      element:  (<PrivateRoute>< SingleTalent /></PrivateRoute>)
+    },
+    {
+      path:'/dashboard/talents/create',
+      element: (<PrivateRoute>< Post /></PrivateRoute>)
     },
    ]
-    },
+  },
 ])
 
 function App() {
   return (
     <>
     <RouterProvider router={router} />
+    <ToastContainer />
     </>
   );
 }
